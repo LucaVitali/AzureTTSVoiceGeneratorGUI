@@ -48,10 +48,6 @@ V0.01, 23/08/2019 - Initial version
 # Authentication
 #################
 
-# Note: Trial keys will be for the 'westus' location only
-
-
-
 # Generate Request Auth Header
 $Location = "westus"
 $TokenURI = "https://$($location).api.cognitive.microsoft.com/sts/v1.0/issueToken"
