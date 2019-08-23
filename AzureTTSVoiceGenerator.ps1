@@ -43,28 +43,34 @@ SOFTWARE.
 Change Log:
 V0.01, 23/08/2019 - Initial version
 #>
-# 
-# 
-# Trial keys will be for the 'westus' location
-$location = "westus"
-$txt2SpeechTokenURI = "https://$($location).api.cognitive.microsoft.com/sts/v1.0/issueToken"
-$key1 = "your api key"
+
+#################
+# Authentication
+#################
+
+# Note: Trial keys will be for the 'westus' location only
+
+
+
+# Generate Request Auth Header
+$Location = "westus"
+$TokenURI = "https://$($location).api.cognitive.microsoft.com/sts/v1.0/issueToken"
+$Key1 = "YOUR_SUBSCRIPTION_KEY"
+$TokenHeader = @{"Ocp-Apim-Subscription-Key" = $Key1;"Content-Length"= "0";"Content-type" = "application/x-www-form-urlencoded"}
+            
+# Get OAuth Token
+$OAuthToken = Invoke-RestMethod -Method POST -Uri $TokenURI -Headers $TokenHeader
+
 
 # Output Settings
 Add-Type -AssemblyName presentationCore
-$mediaPlayer = New-Object system.windows.media.mediaplayer
-# Output Path
-$audioPath = "C:\temp\"
-# Output File
-$audiofile = "audiooutexample.mp3"
 
-# Generate Request Auth Headers
-$TokenHeaders = @{"Ocp-Apim-Subscription-Key" = $key1;
-            "Content-Length"= "0";
-            "Content-type" = "application/x-www-form-urlencoded"
-} 
-# Get OAuth Token
-$OAuthToken = Invoke-RestMethod -Method POST -Uri $txt2SpeechTokenURI  -Headers $TokenHeaders
+# Output Path
+$AudioPath = "C:\temp\"
+
+# Output File
+$AudioFile = "audiooutexample.mp3"
+
 
 # Text to Speech Endpoint
 $URI = "https://$($location).tts.speech.microsoft.com/cognitiveservices/v1"
@@ -79,13 +85,12 @@ $URI = "https://$($location).tts.speech.microsoft.com/cognitiveservices/v1"
 #audio-16khz-64kbitrate-mono-mp3 
 #audio-16khz-32kbitrate-mono-mp3
 
-$headers = @{"Ocp-Apim-Subscription-Key" = $key1; 
+$Headers = @{"Ocp-Apim-Subscription-Key" = $key1; 
             "Content-Type" = "application/ssml+xml";
             "X-Microsoft-OutputFormat" = "audio-16khz-32kbitrate-mono-mp3";
             "User-Agent" = "MIMText2Speech";
             "Authorization" = $OAuthToken
             }
-
 
 # Voices https://docs.microsoft.com/en-us/azure/cognitive-services/speech/api-reference-rest/bingvoiceoutput#SupLocales 
 #Microsoft Server Speech Text to Speech Voice (en-US, JessaRUS)
@@ -104,14 +109,5 @@ $headers = @{"Ocp-Apim-Subscription-Key" = $key1;
 $Voice.speak.voice.'#text' = "I just converted this string to speech using Azure"
 $Voice.speak.voice.'#text'  
 
-# Send request for conversion
-Invoke-RestMethod -Method POST -Uri $URI -Headers $headers -Body $voice -ContentType "application/ssml+xml" -OutFile "$($audioPath)$($audiofile)" 
-
-# small delay for file to be written, open the file and play
-start-sleep -Seconds 1
-$mediaPlayer.open($audioPath + $audiofile)
-Start-Sleep -Seconds 1
-$responseDuration = $mediaPlayer.NaturalDuration.TimeSpan.TotalSeconds
-$mediaPlayer.Play()
-Start-Sleep -Seconds $responseDuration
-$mediaPlayer.Close()
+# Voice Message Generation
+Invoke-RestMethod -Method POST -Uri $URI -Headers $Headers -Body $Voice -ContentType "application/ssml+xml" -OutFile "$($AudioPath)$($AudioFile)" 
