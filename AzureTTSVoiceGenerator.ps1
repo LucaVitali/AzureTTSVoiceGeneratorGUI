@@ -49,7 +49,7 @@ V0.01, 23/08/2019 - Initial version
 #################
 
 # Generate Request Auth Header
-$Location = "westus"
+$Location = "westeurope"
 $TokenURI = "https://$($location).api.cognitive.microsoft.com/sts/v1.0/issueToken"
 $Key1 = "YOUR_SUBSCRIPTION_KEY"
 $TokenHeaders = @{
