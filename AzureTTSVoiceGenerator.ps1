@@ -3,7 +3,7 @@ Azure TTS Voice Generator
 Azure Cognitive Services Text to Speech
 
 .SYNOPSIS
-AzureTTSVoiceGenerator.ps1
+AzureTTSVoiceGeneratorGUI.ps1
 
 .DESCRIPTION 
 PowerShell script to generate Voice Messages with Azure Cognitive Services Text to Speech
@@ -44,69 +44,87 @@ Change Log:
 V0.01, 23/08/2019 - Initial version
 #>
 
-#################
-# Authentication
-#################
+#region InitializeVariables
+$ScriptPath = $MyInvocation.MyCommand.Path
+$ConfigFile = ([System.IO.Path]::ChangeExtension($ScriptPath, "xml")) 
+$Key = ""
+$Location = ""
+$AudioPath = ""
+$AudioFile = ""
+$AudioFormat = ""
+$Voice = ""
+#endregion InitializeVariables
 
-# Generate Request Auth Header
-$Location = "westeurope"
-$TokenURI = "https://$($location).api.cognitive.microsoft.com/sts/v1.0/issueToken"
-$Key1 = "4357584a1225404eb6bc2d110f60585f"
-$TokenHeaders = @{
- "Content-type"= "application/x-www-form-urlencoded";
- "Content-Length"= "0";
- "Ocp-Apim-Subscription-Key"= $Key1
- }
-            
-# Get OAuth Token
-$OAuthToken = Invoke-RestMethod -Method POST -Uri $TokenURI -Headers $TokenHeaders
+Function ReadSettings ()
+{
+	if (Test-Path -Path "$($ConfigFile)")
+	{
+		try
+		{
+			$xml = [xml](get-Content -path "$($ConfigFile)")
+			$Key = $xml.configuration.SavedKey
+			$Location = $xml.configuration.SavedLocation
+			$AudioPath = $xml.configuration.SavedAudioPath
+      $AudioFile = $xml.configuration.SavedAudioFile
+      $AudioFormat = $xml.configuration.SavedAudioFormat
+      $Voice = $xml.configuration.SavedVoice
+		}
+		catch
+		{
+      $Key = ""
+      $Location = ""
+			$AudioPath = ""
+      $AudioFile = ""
+      $AudioFormat = ""
+      $Voice = ""
+		}
+	}
+	else
+	{
+      $Key = ""
+      $Location = ""
+			$AudioPath = ""
+      $AudioFile = ""
+      $AudioFormat = ""
+      $Voice = ""
+	}
+	return $Key,$Location,$AudioPath,$AudioFile,$AudioFormat,$Voice
+}
 
-# Text to Speech Endpoint
-$URI = "https://$($location).tts.speech.microsoft.com/cognitiveservices/v1"
-
-
-#################
-# Output
-#################
-
-# Output Settings
-Add-Type -AssemblyName presentationCore
-
-# Default Output Path
-$AudioPath = "C:\Temp\"
-
-# Default Output File
-$AudioFile = "VoiceMessage1.wav"
-
-# Output formats
-#ssml-16khz-16bit-mono-tts 
-#raw-16khz-16bit-mono-pcm 
-#audio-16khz-16kbps-mono-siren 
-#riff-16khz-16kbps-mono-siren 
-#riff-16khz-16bit-mono-pcm 
-#audio-16khz-128kbitrate-mono-mp3 
-#audio-16khz-64kbitrate-mono-mp3 
-#audio-16khz-32kbitrate-mono-mp3
-$AudioFormat = "riff-16khz-16bit-mono-pcm"
-
-$RequestHeaders = @{
- "Authorization"= $OAuthToken;
- "Content-Type"= "application/ssml+xml";
- "X-Microsoft-OutputFormat"= $AudioFormat;
- "User-Agent" = "MIMText2Speech" 
- }
-
-[xml]$Voice = @'
-<speak version='1.0' xmlns="http://www.w3.org/2001/10/synthesis" xml:lang='it-IT'> 
-  <voice  name='Microsoft Server Speech Text to Speech Voice (it-IT, ElsaNeural)'>
-    TEXTTOCONVERT
-  </voice>
-</speak>
-'@
-
-#################
-# XAML
-#################
+Function WriteSettings ()
+{
+	param ([string]$myConfigFile, [string]$Key, [string]$Location, [string]$AudioPath, [string]$AudioFile, [string]$AudioFormat, [string]$Voice)
+		[xml]$Doc = New-Object System.Xml.XmlDocument
+		$Dec = $Doc.CreateXmlDeclaration("1.0","UTF-8",$null)
+		$Doc.AppendChild($Dec) | out-null
+		$Root = $Doc.CreateNode("element","configuration",$null)
+		$Element = $Doc.CreateElement("SavedKey")
+		$Element.InnerText = $Key
+		$Root.AppendChild($Element) | out-null
+		$Element = $Doc.CreateElement("SavedLocation")
+		$Element.InnerText = $Location
+		$Root.AppendChild($Element) | out-null
+		$Element = $Doc.CreateElement("SavedAudioPath")
+		$Element.InnerText = $AudioPath
+		$Root.AppendChild($Element) | out-null
+		$Element = $Doc.CreateElement("SavedAudioFile")
+		$Element.InnerText = $AudioFile
+		$Root.AppendChild($Element) | out-null
+		$Element = $Doc.CreateElement("SavedAudioFormat")
+		$Element.InnerText = $AudioFormat
+		$Root.AppendChild($Element) | out-null
+		$Element = $Doc.CreateElement("SavedVoice")
+		$Element.InnerText = $Voice
+		$Root.AppendChild($Element) | out-null
+		$Doc.AppendChild($Root) | out-null
+		try
+		{
+			$Doc.save(("$($myConfigFile)"))
+		}
+		catch
+		{
+		}
+}
 
 #region XAML window definition
 # Right-click XAML and choose WPF/Edit... to edit WPF Design
@@ -117,28 +135,66 @@ $xaml = @'
    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
    Width ="750"
    SizeToContent="WidthAndHeight"
-   Title="AzureTTSVoiceGenerator" Height="418" ResizeMode="CanMinimize" ShowInTaskbar="False" WindowStartupLocation="CenterScreen" MinWidth="750" MinHeight="418">
-    <Grid Margin="10,10,10,0" Height="376" VerticalAlignment="Top">
+   Title="AzureTTSVoiceGenerator" Height="430" ResizeMode="CanMinimize" ShowInTaskbar="False" WindowStartupLocation="CenterScreen" MinWidth="750" MinHeight="430">
+    <Grid Margin="10,10,10,0" Height="387" VerticalAlignment="Top">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-        <TextBox x:Name="Box_TextMessage" HorizontalAlignment="Left" Height="123" Margin="10,243,-497.5,-203" TextWrapping="Wrap" Text="Place here the text you want to convert to a voice message" VerticalAlignment="Top" Width="610"/>
-        <Button x:Name="Button_Run" Content="RUN!" HorizontalAlignment="Left" Margin="636,243,-588.5,-203" VerticalAlignment="Top" Width="75" Height="123"/>
-        <ComboBox x:Name="ComboBox_Location" HorizontalAlignment="Left" Margin="98,14,-196.5,0" VerticalAlignment="Top" Width="208"/>
+        <TextBox x:Name="Box_TextMessage" HorizontalAlignment="Left" Height="123" Margin="10,254,-453.5,-206" TextWrapping="Wrap" Text="Place here the text you want to convert to a voice message" VerticalAlignment="Top" Width="595"/>
+        <Button x:Name="Button_Run" Content="RUN!" HorizontalAlignment="Left" Margin="616,254,-559.5,-206" VerticalAlignment="Top" Width="95" Height="123"/>
+        <ComboBox x:Name="ComboBox_Location" HorizontalAlignment="Left" Margin="98,14,-262.5,0" VerticalAlignment="Top" Width="331" IsEditable="True" IsSynchronizedWithCurrentItem="True">
+            <ComboBoxItem Content="australiaeast"/>
+            <ComboBoxItem Content="canadacentral"/>
+            <ComboBoxItem Content="centralus"/>
+            <ComboBoxItem Content="eastasia"/>
+            <ComboBoxItem Content="eastus"/>
+            <ComboBoxItem Content="eastus2"/>
+            <ComboBoxItem Content="francecentral"/>
+            <ComboBoxItem Content="centralindia"/>
+            <ComboBoxItem Content="japaneast"/>
+            <ComboBoxItem Content="koreacentral"/>
+            <ComboBoxItem Content="northcentralus"/>
+            <ComboBoxItem Content="northeurope"/>
+            <ComboBoxItem Content="southcentralus"/>
+            <ComboBoxItem Content="southeastasia"/>
+            <ComboBoxItem Content="uksouth"/>
+            <ComboBoxItem Content="westeurope"/>
+            <ComboBoxItem Content="westus"/>
+            <ComboBoxItem Content="westus2"/>
+        </ComboBox>
         <Label Content="Location" HorizontalAlignment="Left" Margin="10,12,0,0" VerticalAlignment="Top"/>
         <Label Content="Key" HorizontalAlignment="Left" Margin="10,44,0,0" VerticalAlignment="Top" Width="49"/>
-        <TextBox x:Name="Box_Key" HorizontalAlignment="Left" Height="23" Margin="98,45,-197.5,0" TextWrapping="Wrap" Text="Enter your Key" VerticalAlignment="Top" Width="208"/>
-        <Label Content="Output Path" HorizontalAlignment="Left" Margin="10,98,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.484,0.464"/>
-        <Label Content="Output File" HorizontalAlignment="Left" Margin="10,130,-17.5,-4" VerticalAlignment="Top" Width="115"/>
-        <TextBox x:Name="Box_Output_Path" HorizontalAlignment="Left" Height="23" Margin="98,99,-199.5,0" TextWrapping="Wrap" Text="C:\Temp" VerticalAlignment="Top" Width="208"/>
-        <TextBox x:Name="Box_Output_File" HorizontalAlignment="Left" Height="23" Margin="98,131,-198.5,-2" TextWrapping="Wrap" Text="AudioMessage.wav" VerticalAlignment="Top" Width="208"/>
-        <Label Content="Audio Format" HorizontalAlignment="Left" Margin="10,167,-6.5,-33" VerticalAlignment="Top" Width="115"/>
-        <Label Content="Voice" HorizontalAlignment="Left" Margin="10,197,-3.5,-61" VerticalAlignment="Top" Width="115"/>
-        <ComboBox x:Name="ComboBox_Format" HorizontalAlignment="Left" Margin="98,169,-187.5,-31" VerticalAlignment="Top" Width="208"/>
-        <ComboBox x:Name="ComboBox_Voice" HorizontalAlignment="Left" Margin="98,199,-184.5,-59" VerticalAlignment="Top" Width="208"/>
+        <TextBox x:Name="Box_Key" HorizontalAlignment="Left" Height="23" Margin="98,45,-263.5,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="331"/>
+        <Label Content="Output Path" HorizontalAlignment="Left" Margin="10,91,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.484,0.464"/>
+        <Label Content="Output File" HorizontalAlignment="Left" Margin="10,123,0,0" VerticalAlignment="Top" Width="74"/>
+        <TextBox x:Name="Box_Output_Path" HorizontalAlignment="Left" Height="23" Margin="98,92,-264.5,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="331"/>
+        <TextBox x:Name="Box_Output_File" HorizontalAlignment="Left" Height="23" Margin="98,124,-266.5,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="331"/>
+        <Label Content="Audio Format" HorizontalAlignment="Left" Margin="10,187,0,-41" VerticalAlignment="Top" Width="115"/>
+        <Label Content="Voice" HorizontalAlignment="Left" Margin="10,217,0,-71" VerticalAlignment="Top" Width="115"/>
+        <ComboBox x:Name="ComboBox_Format" HorizontalAlignment="Left" Margin="98,189,-261.5,-32" VerticalAlignment="Top" Width="331" IsSynchronizedWithCurrentItem="True">
+            <ComboBoxItem Content="raw-16khz-16bit-mono-pcm"/>
+            <ComboBoxItem Content="raw-8khz-8bit-mono-mulaw"/>
+            <ComboBoxItem Content="riff-8khz-8bit-mono-alaw"/>
+            <ComboBoxItem Content="riff-8khz-8bit-mono-mulaw"/>
+            <ComboBoxItem Content="riff-16khz-16bit-mono-pcm" FontWeight="Bold"/>
+            <ComboBoxItem Content="audio-16khz-128kbitrate-mono-mp3"/>
+            <ComboBoxItem Content="audio-16khz-64kbitrate-mono-mp3"/>
+            <ComboBoxItem Content="audio-16khz-32kbitrate-mono-mp3"/>
+            <ComboBoxItem Content="raw-24khz-16bit-mono-pcm"/>
+            <ComboBoxItem Content="riff-24khz-16bit-mono-pcm"/>
+            <ComboBoxItem Content="audio-24khz-160kbitrate-mono-mp3"/>
+            <ComboBoxItem Content="audio-24khz-96kbitrate-mono-mp3"/>
+            <ComboBoxItem Content="audio-24khz-48kbitrate-mono-mp3"/>
+        </ComboBox>
+        <ComboBox x:Name="ComboBox_Voice" HorizontalAlignment="Left" Margin="98,219,-558.5,-69" VerticalAlignment="Top" Width="613" IsSynchronizedWithCurrentItem="True"/>
+        <Button x:Name="Button_Save" Content="Save Settings" HorizontalAlignment="Left" Margin="616,14,-564.5,0" VerticalAlignment="Top" Width="95" Height="22"/>
+        <Button x:Name="Button_Reload" Content="Reload Settings" HorizontalAlignment="Left" Margin="616,46,-563.5,0" VerticalAlignment="Top" Width="95" Height="22"/>
+        <Label Content="Output" HorizontalAlignment="Left" Margin="10,152,0,0" VerticalAlignment="Top" Width="84"/>
+        <Label x:Name="Label_Output" Content="" HorizontalAlignment="Left" Margin="98,152,-556.5,0" VerticalAlignment="Top" Width="613"/>
+        <Button x:Name="Button_Browse" Content="Browse" HorizontalAlignment="Left" Margin="444,92,-354.5,0" VerticalAlignment="Top" Width="75" Height="23"/>
     </Grid>
 </Window>
 '@
@@ -204,29 +260,124 @@ $window.Button_Run.add_Click{
     [Parameter(Mandatory)][Object]$sender,
     [Parameter(Mandatory)][Windows.RoutedEventArgs]$e
   )
- 
- 
- $AudioPath = $window.Box_Output_Path.Text
- $AudioFile = $window.Box_Output_File.Text
- $Voice.speak.voice.'#text' = $window.Box_TextMessage.Text
- Invoke-RestMethod -Method POST -Uri $URI -Headers $RequestHeaders -Body $Voice -ContentType "application/ssml+xml" -OutFile "$($AudioPath)\$($AudioFile)" 
+Add-Type -AssemblyName presentationCore
+$Location = $window.ComboBox_Location.Text
+$AudioPath = $window.Box_Output_Path.Text
+$AudioFile = $window.Box_Output_File.Text
+$AudioFormat = $window.ComboBox_Format.Text
+$RequestHeaders = @{"Authorization"= $OAuthToken;"Content-Type"= "application/ssml+xml";"X-Microsoft-OutputFormat"= $AudioFormat;"User-Agent" = "MIMText2Speech"}
+[xml]$VoiceBody = @"
+<speak version='1.0' xmlns="http://www.w3.org/2001/10/synthesis" xml:lang='en-US'> 
+  <voice  name='$($window.ComboBox_Voice.Text)'>
+    VoiceMessage
+  </voice>
+</speak>
+"@
+ $VoiceBody.speak.voice.'#text' = $window.Box_TextMessage.Text
+ Invoke-RestMethod -Method POST -Uri $ServiceURI -Headers $RequestHeaders -Body $VoiceBody -ContentType "application/ssml+xml" -OutFile "$($AudioPath)\$($AudioFile)"
 }
 
-#endregion Event Handlers
+$window.Button_Save.add_Click{
+  # remove param() block if access to event information is not required
+  param
+  (
+    [Parameter(Mandatory)][Object]$sender,
+    [Parameter(Mandatory)][Windows.RoutedEventArgs]$e
+  )
+  
+  WriteSettings $Configfile $window.Box_Key.Text $window.ComboBox_Location.Text $window.Box_Output_Path.Text $window.Box_Output_File.Text $window.ComboBox_Format.Text $window.ComboBox_Voice.Text
+}
+
+$window.Button_Reload.add_Click{
+  # remove param() block if access to event information is not required
+  param
+  (
+    [Parameter(Mandatory)][Object]$sender,
+    [Parameter(Mandatory)][Windows.RoutedEventArgs]$e
+  )
+  $Key,$Location,$AudioPath,$AudioFile,$AudioFormat,$Voice = ReadSettings
+  $window.Box_Key.Text= $Key
+  $window.ComboBox_Location.Text= $Location
+  $window.Box_Output_Path.Text= $AudioPath
+  $window.Box_Output_File.Text= $AudioFile
+  $window.ComboBox_Format.Text= $AudioFormat
+  $TokenURI = "https://$($location).api.cognitive.microsoft.com/sts/v1.0/issueToken"
+  $ServiceURI = "https://$($Location).tts.speech.microsoft.com/cognitiveservices/v1"
+  $TokenHeaders = @{"Content-type"= "application/x-www-form-urlencoded";"Content-Length"= "0";"Ocp-Apim-Subscription-Key"= $Key}
+  $OAuthToken = Invoke-RestMethod -Method POST -Uri $TokenURI -Headers $TokenHeaders
+  $VoiceListURI = "https://$($Location).tts.speech.microsoft.com/cognitiveservices/voices/list"
+  $RequestHeadersGET = @{"Authorization"= $OAuthToken}
+  $VoiceList = Invoke-RestMethod -Method GET -Uri $VoiceListURI -Headers $RequestHeadersGET
+  $window.ComboBox_Voice.Text= $Voice
+ }
+
+$window.Box_Output_Path.add_SelectionChanged{
+  # remove param() block if access to event information is not required
+  param
+  (
+    [Parameter(Mandatory)][Object]$sender,
+    [Parameter(Mandatory)][Windows.RoutedEventArgs]$e
+  )
+  
+  $window.Label_Output.Content= "$($window.Box_Output_Path.Text)\$($window.Box_Output_File.Text)"
+}
+
+$window.Box_Output_File.add_SelectionChanged{
+  # remove param() block if access to event information is not required
+  param
+  (
+    [Parameter(Mandatory)][Object]$sender,
+    [Parameter(Mandatory)][Windows.RoutedEventArgs]$e
+  )
+  
+  $window.Label_Output.Content= "$($window.Box_Output_Path.Text)\$($window.Box_Output_File.Text)"
+}
+
+$window.Button_Browse.add_Click{
+  # remove param() block if access to event information is not required
+  param
+  (
+    [Parameter(Mandatory)][Object]$sender,
+    [Parameter(Mandatory)][Windows.RoutedEventArgs]$e
+  )
+  
+ <UserControl x:Class="FolderBrowserDialogServiceSample.Views.FolderBrowserDialogView" 
+    ...
+    xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm">
+    <dxmvvm:Interaction.Behaviors>
+        <dxmvvm:FolderBrowserDialogService />
+    </dxmvvm:Interaction.Behaviors>
+    ...
+</UserControl>
+}
+
+
 
 # Show Window
+$Key,$Location,$AudioPath,$AudioFile,$AudioFormat,$Voice = ReadSettings
+$TokenURI = "https://$($location).api.cognitive.microsoft.com/sts/v1.0/issueToken"
+$ServiceURI = "https://$($Location).tts.speech.microsoft.com/cognitiveservices/v1"
+$TokenHeaders = @{"Content-type"= "application/x-www-form-urlencoded";"Content-Length"= "0";"Ocp-Apim-Subscription-Key"= $Key}
+$OAuthToken = Invoke-RestMethod -Method POST -Uri $TokenURI -Headers $TokenHeaders
+$VoiceListURI = "https://$($Location).tts.speech.microsoft.com/cognitiveservices/voices/list"
+$RequestHeadersGET = @{"Authorization"= $OAuthToken}
+$VoiceList = Invoke-RestMethod -Method GET -Uri $VoiceListURI -Headers $RequestHeadersGET
+$window.Box_Key.Text= $Key
+$window.ComboBox_Location.Text= $Location
+$window.Box_Output_Path.Text= $AudioPath
+$window.Box_Output_File.Text= $AudioFile
+$window.ComboBox_Format.Text= $AudioFormat
+$window.ComboBox_Voice.ItemsSource= $VoiceList.Name
+$window.ComboBox_Voice.Text= $Voice
+$window.Label_Output.Content= "$($window.Box_Output_Path.Text)\$($window.Box_Output_File.Text)"
 $result = Show-WPFWindow -Window $window
-
 #region Process results
 if ($result -eq $true)
 {
-  [PSCustomObject]@{
-    EmployeeName = $window.TxtName.Text
-    EmployeeMail = $window.TxtEmail.Text
-  }
+
 }
 else
 {
-  Write-Warning 'User aborted dialog.'
+
 }
 #endregion Process results
