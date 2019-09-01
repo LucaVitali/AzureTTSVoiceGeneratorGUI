@@ -41,7 +41,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 Change Log:
-V0.01, 23/08/2019 - Initial version
+V1.00, 31/08/2019 - Initial version
 #>
 
 #region InitializeVariables
@@ -126,6 +126,21 @@ Function WriteSettings ()
 		}
 }
 
+function Get-Folder {
+[CmdletBinding(SupportsShouldProcess = $True, SupportsPaging = $True)]
+	param(
+		[string] $Message = "Select the desired folder",
+		[int] $path = 0x00
+	)
+  [Object] $FolderObject = New-Object -ComObject Shell.Application
+  $folder = $FolderObject.BrowseForFolder(0, $message, 0, $path)
+  if ($folder -ne $null) {
+		return $folder.self.Path
+  } else {
+  	Write-Host "No folder specified"
+  }
+}
+
 #region XAML window definition
 # Right-click XAML and choose WPF/Edit... to edit WPF Design
 # in your favorite WPF editing tool
@@ -135,17 +150,17 @@ $xaml = @'
    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
    Width ="750"
    SizeToContent="WidthAndHeight"
-   Title="AzureTTSVoiceGenerator" Height="430" ResizeMode="CanMinimize" ShowInTaskbar="False" WindowStartupLocation="CenterScreen" MinWidth="750" MinHeight="430">
-    <Grid Margin="10,10,10,0" Height="387" VerticalAlignment="Top">
+   Title="AzureTTSVoiceGeneratorGUI" Height="550" ResizeMode="CanMinimize" ShowInTaskbar="False" WindowStartupLocation="CenterScreen" MinWidth="750" MinHeight="550">
+    <Grid Margin="10,10,10,0" Height="508" VerticalAlignment="Top">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-        <TextBox x:Name="Box_TextMessage" HorizontalAlignment="Left" Height="123" Margin="10,254,-453.5,-206" TextWrapping="Wrap" Text="Place here the text you want to convert to a voice message" VerticalAlignment="Top" Width="595"/>
-        <Button x:Name="Button_Run" Content="RUN!" HorizontalAlignment="Left" Margin="616,254,-559.5,-206" VerticalAlignment="Top" Width="95" Height="123"/>
-        <ComboBox x:Name="ComboBox_Location" HorizontalAlignment="Left" Margin="98,14,-262.5,0" VerticalAlignment="Top" Width="331" IsEditable="True" IsSynchronizedWithCurrentItem="True">
+        <TextBox x:Name="Box_TextMessage" HorizontalAlignment="Left" Height="123" Margin="10,319,-436.5,-262" TextWrapping="Wrap" Text="Place here the text you want to convert to a voice message" VerticalAlignment="Top" Width="595"/>
+        <Button x:Name="Button_Run" Content="RUN!" HorizontalAlignment="Left" Margin="616,319,-542.5,-262" VerticalAlignment="Top" Width="95" Height="123"/>
+        <ComboBox x:Name="ComboBox_Location" HorizontalAlignment="Left" Margin="98,14,-275,0" VerticalAlignment="Top" Width="421" IsEditable="True" IsSynchronizedWithCurrentItem="True">
             <ComboBoxItem Content="australiaeast"/>
             <ComboBoxItem Content="canadacentral"/>
             <ComboBoxItem Content="centralus"/>
@@ -167,14 +182,14 @@ $xaml = @'
         </ComboBox>
         <Label Content="Location" HorizontalAlignment="Left" Margin="10,12,0,0" VerticalAlignment="Top"/>
         <Label Content="Key" HorizontalAlignment="Left" Margin="10,44,0,0" VerticalAlignment="Top" Width="49"/>
-        <TextBox x:Name="Box_Key" HorizontalAlignment="Left" Height="23" Margin="98,45,-263.5,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="331"/>
-        <Label Content="Output Path" HorizontalAlignment="Left" Margin="10,91,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.484,0.464"/>
-        <Label Content="Output File" HorizontalAlignment="Left" Margin="10,123,0,0" VerticalAlignment="Top" Width="74"/>
-        <TextBox x:Name="Box_Output_Path" HorizontalAlignment="Left" Height="23" Margin="98,92,-264.5,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="331"/>
-        <TextBox x:Name="Box_Output_File" HorizontalAlignment="Left" Height="23" Margin="98,124,-266.5,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="331"/>
-        <Label Content="Audio Format" HorizontalAlignment="Left" Margin="10,187,0,-41" VerticalAlignment="Top" Width="115"/>
-        <Label Content="Voice" HorizontalAlignment="Left" Margin="10,217,0,-71" VerticalAlignment="Top" Width="115"/>
-        <ComboBox x:Name="ComboBox_Format" HorizontalAlignment="Left" Margin="98,189,-261.5,-32" VerticalAlignment="Top" Width="331" IsSynchronizedWithCurrentItem="True">
+        <TextBox x:Name="Box_Key" HorizontalAlignment="Left" Height="22" Margin="98,46,-276,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="421"/>
+        <Label Content="Output Folder" HorizontalAlignment="Left" Margin="10,147,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.484,0.464"/>
+        <Label Content="Output File" HorizontalAlignment="Left" Margin="10,179,0,-24" VerticalAlignment="Top" Width="74"/>
+        <TextBox x:Name="Box_Output_Path" HorizontalAlignment="Left" Height="23" Margin="98,148,-263,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="421"/>
+        <TextBox x:Name="Box_Output_File" HorizontalAlignment="Left" Height="23" Margin="98,180,-264,-21" TextWrapping="Wrap" VerticalAlignment="Top" Width="421"/>
+        <Label Content="Audio Format" HorizontalAlignment="Left" Margin="10,252,0,-98" VerticalAlignment="Top" Width="115"/>
+        <Label Content="Voice" HorizontalAlignment="Left" Margin="10,282,0,-128" VerticalAlignment="Top" Width="115"/>
+        <ComboBox x:Name="ComboBox_Format" HorizontalAlignment="Left" Margin="98,254,-262,-93" VerticalAlignment="Top" Width="421" IsSynchronizedWithCurrentItem="True">
             <ComboBoxItem Content="raw-16khz-16bit-mono-pcm"/>
             <ComboBoxItem Content="raw-8khz-8bit-mono-mulaw"/>
             <ComboBoxItem Content="riff-8khz-8bit-mono-alaw"/>
@@ -189,12 +204,20 @@ $xaml = @'
             <ComboBoxItem Content="audio-24khz-96kbitrate-mono-mp3"/>
             <ComboBoxItem Content="audio-24khz-48kbitrate-mono-mp3"/>
         </ComboBox>
-        <ComboBox x:Name="ComboBox_Voice" HorizontalAlignment="Left" Margin="98,219,-558.5,-69" VerticalAlignment="Top" Width="613" IsSynchronizedWithCurrentItem="True"/>
+        <ComboBox x:Name="ComboBox_Voice" HorizontalAlignment="Left" Margin="98,284,-214,-95" VerticalAlignment="Top" Width="421" IsSynchronizedWithCurrentItem="True"/>
         <Button x:Name="Button_Save" Content="Save Settings" HorizontalAlignment="Left" Margin="616,14,-564.5,0" VerticalAlignment="Top" Width="95" Height="22"/>
-        <Button x:Name="Button_Reload" Content="Reload Settings" HorizontalAlignment="Left" Margin="616,46,-563.5,0" VerticalAlignment="Top" Width="95" Height="22"/>
-        <Label Content="Output" HorizontalAlignment="Left" Margin="10,152,0,0" VerticalAlignment="Top" Width="84"/>
-        <Label x:Name="Label_Output" Content="" HorizontalAlignment="Left" Margin="98,152,-556.5,0" VerticalAlignment="Top" Width="613"/>
-        <Button x:Name="Button_Browse" Content="Browse" HorizontalAlignment="Left" Margin="444,92,-354.5,0" VerticalAlignment="Top" Width="75" Height="23"/>
+        <Button x:Name="Button_Reload" Content="Reload Settings" HorizontalAlignment="Left" Margin="616,46,-540.5,0" VerticalAlignment="Top" Width="95" Height="22"/>
+        <Label Content="Output" HorizontalAlignment="Left" Margin="10,208,0,-53" VerticalAlignment="Top" Width="84"/>
+        <Label x:Name="Label_Output" Content="" HorizontalAlignment="Left" Margin="98,208,-460,-53" VerticalAlignment="Top" Width="613"/>
+        <Button x:Name="Button_Browse" Content="Browse" HorizontalAlignment="Left" Margin="616,148,-455,0" VerticalAlignment="Top" Width="95" Height="23"/>
+        <Label Content="Token Service Endpoint" HorizontalAlignment="Left" Margin="10,80,0,0" VerticalAlignment="Top" Width="133"/>
+        <Label Content="Cognitive Services TTS Endpoint" HorizontalAlignment="Left" Margin="10,111,0,0" VerticalAlignment="Top" Width="183"/>
+        <Label x:Name="Label_Token_URI" Content="" HorizontalAlignment="Left" Margin="193,80,-464,0" VerticalAlignment="Top" Width="521"/>
+        <Label x:Name="Label_Service_URI" Content="" HorizontalAlignment="Left" Margin="193,111,-461,0" VerticalAlignment="Top" Width="518"/>
+        <Label Content="Be careful: existing files with &#xD;&#xA;the same name will be &#xD;&#xA;overwritten without any alert!" HorizontalAlignment="Left" Margin="531,179,-407,-35" Width="180" Height="66" VerticalAlignment="Top"/>
+        <Label Content="If available, prefer neural &#xD;&#xA;voices to standard ones" HorizontalAlignment="Left" Margin="531,260,-362,-59" VerticalAlignment="Top" Height="42" Width="180"/>
+        <TextBlock HorizontalAlignment="Left" Margin="474,465,-354,-119" TextWrapping="Wrap" VerticalAlignment="Top" Height="41" Width="237"><Run Text="[LinkedIn]"/><Run Text=" "/><Hyperlink NavigateUri="https://linkedin.com/in/lucavitali"><Run Text="https://linkedin.com/in/lucavitali"/></Hyperlink><LineBreak/><Run Text="[Github]"/><Run Text="&#x9;  "/><Hyperlink NavigateUri="https://github.com/LucaVitali"><Run Text="https://github.com/LucaVitali"/></Hyperlink></TextBlock>
+        <TextBlock HorizontalAlignment="Left" Margin="10,452,-28,-64" TextWrapping="Wrap" VerticalAlignment="Top" Width="376"><Run Text="Created by Luca Vitali - Microsoft Office Apps &amp; Services MVP"/><LineBreak/><Run Text="[Blog] &#x9;  "/><Hyperlink NavigateUri="https://lucavitali.wordpress.com/"><Run Text="https://lucavitali.wordpress.com"/></Hyperlink><LineBreak/><Run Text="[Twitter] &#x9;  "/><Hyperlink NavigateUri="https://twitter.com/Luca_Vitali"><Run Text="https://twitter.com/Luca_Vitali"/></Hyperlink></TextBlock>
     </Grid>
 </Window>
 '@
@@ -340,18 +363,8 @@ $window.Button_Browse.add_Click{
     [Parameter(Mandatory)][Object]$sender,
     [Parameter(Mandatory)][Windows.RoutedEventArgs]$e
   )
-  
- <UserControl x:Class="FolderBrowserDialogServiceSample.Views.FolderBrowserDialogView" 
-    ...
-    xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm">
-    <dxmvvm:Interaction.Behaviors>
-        <dxmvvm:FolderBrowserDialogService />
-    </dxmvvm:Interaction.Behaviors>
-    ...
-</UserControl>
+  $window.Box_Output_Path.Text = (Get-Folder "Select the output folder or create a new one")
 }
-
-
 
 # Show Window
 $Key,$Location,$AudioPath,$AudioFile,$AudioFormat,$Voice = ReadSettings
