@@ -1,5 +1,5 @@
 <#
-Azure TTS Voice Generator
+Azure TTS Voice Generator GUI
 Azure Cognitive Services Text to Speech
 
 .SYNOPSIS
@@ -7,14 +7,16 @@ AzureTTSVoiceGeneratorGUI.ps1
 
 .DESCRIPTION 
 PowerShell script to generate Voice Messages with Azure Cognitive Services Text to Speech
+Quick Link: http://bit.ly/AzureTTS
 
 .NOTES
-Written by: Luca Vitali
+Written by: Luca Vitali - Microsoft Office Apps & Services MVP
 
 Find me on:
-* My Blog:	https://lucavitali.wordpress.com/
-* Twitter:	https://twitter.com/Luca_Vitali
-* LinkedIn:	https://www.linkedin.com/in/lucavitali/
+[Blog]		https://lucavitali.wordpress.com/
+[Twitter]	https://twitter.com/Luca_Vitali
+[LinkedIn]	https://www.linkedin.com/in/lucavitali/
+[GitHub]	https://github.com/LucaVitali
 
 License:
 
@@ -41,7 +43,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 Change Log:
-V1.00, 31/08/2019 - Initial version
+V1.00, 02/09/2019 - Initial version
 #>
 
 #region InitializeVariables
@@ -148,19 +150,22 @@ $xaml = @'
 <Window
    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-   Width ="750"
+   Width ="660"
    SizeToContent="WidthAndHeight"
-   Title="AzureTTSVoiceGeneratorGUI" Height="550" ResizeMode="CanMinimize" ShowInTaskbar="False" WindowStartupLocation="CenterScreen" MinWidth="750" MinHeight="550">
-    <Grid Margin="10,10,10,0" Height="508" VerticalAlignment="Top">
+   Title="AzureTTSVoiceGeneratorGUI" Height="681" ResizeMode="CanMinimize" ShowInTaskbar="False" WindowStartupLocation="CenterScreen" MinWidth="660" MinHeight="681">
+    <Grid Margin="10,10,4,0" Height="634" VerticalAlignment="Top">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-        <TextBox x:Name="Box_TextMessage" HorizontalAlignment="Left" Height="123" Margin="10,319,-436.5,-262" TextWrapping="Wrap" Text="Place here the text you want to convert to a voice message" VerticalAlignment="Top" Width="595"/>
-        <Button x:Name="Button_Run" Content="RUN!" HorizontalAlignment="Left" Margin="616,319,-542.5,-262" VerticalAlignment="Top" Width="95" Height="123"/>
-        <ComboBox x:Name="ComboBox_Location" HorizontalAlignment="Left" Margin="98,14,-275,0" VerticalAlignment="Top" Width="421" IsEditable="True" IsSynchronizedWithCurrentItem="True">
+        <Rectangle HorizontalAlignment="Left" Height="109" Margin="10,307,-113,0" Stroke="Gray" VerticalAlignment="Top" Width="625"/>
+        <Rectangle HorizontalAlignment="Left" Height="118" Margin="10,165,-118,0" Stroke="Gray" VerticalAlignment="Top" Width="625"/>
+        <Rectangle HorizontalAlignment="Left" Height="127" Margin="10,14,-123,0" Stroke="Gray" VerticalAlignment="Top" Width="625"/>
+        <TextBox x:Name="Box_TextMessage" HorizontalAlignment="Left" Height="111" Margin="10,438,0,-40.5" TextWrapping="Wrap" Text="Place here the text you want to convert to a voice message" VerticalAlignment="Top" Width="509"/>
+        <Button x:Name="Button_Run" Content="RUN!" HorizontalAlignment="Left" Margin="531,438,-102,0" VerticalAlignment="Top" Width="95" Height="44"/>
+        <ComboBox x:Name="ComboBox_Location" HorizontalAlignment="Left" Margin="98,35,-2,0" VerticalAlignment="Top" Width="411" IsEditable="True" IsSynchronizedWithCurrentItem="True">
             <ComboBoxItem Content="australiaeast"/>
             <ComboBoxItem Content="canadacentral"/>
             <ComboBoxItem Content="centralus"/>
@@ -180,16 +185,16 @@ $xaml = @'
             <ComboBoxItem Content="westus"/>
             <ComboBoxItem Content="westus2"/>
         </ComboBox>
-        <Label Content="Location" HorizontalAlignment="Left" Margin="10,12,0,0" VerticalAlignment="Top"/>
-        <Label Content="Key" HorizontalAlignment="Left" Margin="10,44,0,0" VerticalAlignment="Top" Width="49"/>
-        <TextBox x:Name="Box_Key" HorizontalAlignment="Left" Height="22" Margin="98,46,-276,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="421"/>
-        <Label Content="Output Folder" HorizontalAlignment="Left" Margin="10,147,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.484,0.464"/>
-        <Label Content="Output File" HorizontalAlignment="Left" Margin="10,179,0,-24" VerticalAlignment="Top" Width="74"/>
-        <TextBox x:Name="Box_Output_Path" HorizontalAlignment="Left" Height="23" Margin="98,148,-263,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="421"/>
-        <TextBox x:Name="Box_Output_File" HorizontalAlignment="Left" Height="23" Margin="98,180,-264,-21" TextWrapping="Wrap" VerticalAlignment="Top" Width="421"/>
-        <Label Content="Audio Format" HorizontalAlignment="Left" Margin="10,252,0,-98" VerticalAlignment="Top" Width="115"/>
-        <Label Content="Voice" HorizontalAlignment="Left" Margin="10,282,0,-128" VerticalAlignment="Top" Width="115"/>
-        <ComboBox x:Name="ComboBox_Format" HorizontalAlignment="Left" Margin="98,254,-262,-93" VerticalAlignment="Top" Width="421" IsSynchronizedWithCurrentItem="True">
+        <Label Content="Location" HorizontalAlignment="Left" Margin="11,31,0,0" VerticalAlignment="Top"/>
+        <Label Content="Key" HorizontalAlignment="Left" Margin="11,58,0,0" VerticalAlignment="Top" Width="49"/>
+        <TextBox x:Name="Box_Key" HorizontalAlignment="Left" Height="22" Margin="98,62,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="411"/>
+        <Label Content="Output Folder" HorizontalAlignment="Left" Margin="10,176,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.484,0.464"/>
+        <Label Content="Output File" HorizontalAlignment="Left" Margin="10,208,0,0" VerticalAlignment="Top" Width="74"/>
+        <TextBox x:Name="Box_Output_Path" HorizontalAlignment="Left" Height="22" Margin="98,178,-6,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="421"/>
+        <TextBox x:Name="Box_Output_File" HorizontalAlignment="Left" Height="22" Margin="98,210,-6,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="421"/>
+        <Label Content="Audio Format" HorizontalAlignment="Left" Margin="11,317,0,0" VerticalAlignment="Top" Width="83"/>
+        <Label Content="Voice" HorizontalAlignment="Left" Margin="10,367,0,0" VerticalAlignment="Top" Width="83"/>
+        <ComboBox x:Name="ComboBox_Format" HorizontalAlignment="Left" Margin="98,321,0,0" VerticalAlignment="Top" Width="421" IsSynchronizedWithCurrentItem="True">
             <ComboBoxItem Content="raw-16khz-16bit-mono-pcm"/>
             <ComboBoxItem Content="raw-8khz-8bit-mono-mulaw"/>
             <ComboBoxItem Content="riff-8khz-8bit-mono-alaw"/>
@@ -204,20 +209,35 @@ $xaml = @'
             <ComboBoxItem Content="audio-24khz-96kbitrate-mono-mp3"/>
             <ComboBoxItem Content="audio-24khz-48kbitrate-mono-mp3"/>
         </ComboBox>
-        <ComboBox x:Name="ComboBox_Voice" HorizontalAlignment="Left" Margin="98,284,-214,-95" VerticalAlignment="Top" Width="421" IsSynchronizedWithCurrentItem="True"/>
-        <Button x:Name="Button_Save" Content="Save Settings" HorizontalAlignment="Left" Margin="616,14,-564.5,0" VerticalAlignment="Top" Width="95" Height="22"/>
-        <Button x:Name="Button_Reload" Content="Reload Settings" HorizontalAlignment="Left" Margin="616,46,-540.5,0" VerticalAlignment="Top" Width="95" Height="22"/>
-        <Label Content="Output" HorizontalAlignment="Left" Margin="10,208,0,-53" VerticalAlignment="Top" Width="84"/>
-        <Label x:Name="Label_Output" Content="" HorizontalAlignment="Left" Margin="98,208,-460,-53" VerticalAlignment="Top" Width="613"/>
-        <Button x:Name="Button_Browse" Content="Browse" HorizontalAlignment="Left" Margin="616,148,-455,0" VerticalAlignment="Top" Width="95" Height="23"/>
-        <Label Content="Token Service Endpoint" HorizontalAlignment="Left" Margin="10,80,0,0" VerticalAlignment="Top" Width="133"/>
-        <Label Content="Cognitive Services TTS Endpoint" HorizontalAlignment="Left" Margin="10,111,0,0" VerticalAlignment="Top" Width="183"/>
-        <Label x:Name="Label_Token_URI" Content="" HorizontalAlignment="Left" Margin="193,80,-464,0" VerticalAlignment="Top" Width="521"/>
-        <Label x:Name="Label_Service_URI" Content="" HorizontalAlignment="Left" Margin="193,111,-461,0" VerticalAlignment="Top" Width="518"/>
-        <Label Content="Be careful: existing files with &#xD;&#xA;the same name will be &#xD;&#xA;overwritten without any alert!" HorizontalAlignment="Left" Margin="531,179,-407,-35" Width="180" Height="66" VerticalAlignment="Top"/>
-        <Label Content="If available, prefer neural &#xD;&#xA;voices to standard ones" HorizontalAlignment="Left" Margin="531,260,-362,-59" VerticalAlignment="Top" Height="42" Width="180"/>
-        <TextBlock HorizontalAlignment="Left" Margin="474,465,-354,-119" TextWrapping="Wrap" VerticalAlignment="Top" Height="41" Width="237"><Run Text="[LinkedIn]"/><Run Text=" "/><Hyperlink NavigateUri="https://linkedin.com/in/lucavitali"><Run Text="https://linkedin.com/in/lucavitali"/></Hyperlink><LineBreak/><Run Text="[Github]"/><Run Text="&#x9;  "/><Hyperlink NavigateUri="https://github.com/LucaVitali"><Run Text="https://github.com/LucaVitali"/></Hyperlink></TextBlock>
-        <TextBlock HorizontalAlignment="Left" Margin="10,452,-28,-64" TextWrapping="Wrap" VerticalAlignment="Top" Width="376"><Run Text="Created by Luca Vitali - Microsoft Office Apps &amp; Services MVP"/><LineBreak/><Run Text="[Blog] &#x9;  "/><Hyperlink NavigateUri="https://lucavitali.wordpress.com/"><Run Text="https://lucavitali.wordpress.com"/></Hyperlink><LineBreak/><Run Text="[Twitter] &#x9;  "/><Hyperlink NavigateUri="https://twitter.com/Luca_Vitali"><Run Text="https://twitter.com/Luca_Vitali"/></Hyperlink></TextBlock>
+        <ComboBox x:Name="ComboBox_Voice" HorizontalAlignment="Left" Margin="98,371,0,0" VerticalAlignment="Top" Width="421" IsSynchronizedWithCurrentItem="True"/>
+        <Button x:Name="Button_Save" Content="Save Settings" HorizontalAlignment="Left" Margin="531,495,-102,-8.5" VerticalAlignment="Top" Width="95" Height="22"/>
+        <Button x:Name="Button_Reload" Content="Reload Settings" HorizontalAlignment="Left" Margin="531,527,-102,-40.5" VerticalAlignment="Top" Width="95" Height="22"/>
+        <Label Content="Output" HorizontalAlignment="Left" Margin="10,238,0,0" VerticalAlignment="Top" Width="84"/>
+        <Label x:Name="Label_Output" Content="" HorizontalAlignment="Left" Margin="98,238,-113,0" VerticalAlignment="Top" Width="528"/>
+        <Button x:Name="Button_Browse" Content="Browse" HorizontalAlignment="Left" Margin="531,178,-113,0" VerticalAlignment="Top" Width="95" Height="22"/>
+        <Label Content="Token Service" HorizontalAlignment="Left" Margin="11,89,0,0" VerticalAlignment="Top" Width="84"/>
+        <Label Content="TTS Endpoint" HorizontalAlignment="Left" Margin="11,115,0,0" VerticalAlignment="Top" Width="84"/>
+        <Label x:Name="Label_Token_URI" Content="" HorizontalAlignment="Left" Margin="98,89,0,0" VerticalAlignment="Top" Width="411"/>
+        <Label x:Name="Label_Service_URI" Content="" HorizontalAlignment="Left" Margin="98,115,0,0" VerticalAlignment="Top" Width="411"/>
+        <Label Content="Be careful: existing file with the same Output name will be overwritten without any alert!" HorizontalAlignment="Left" Margin="10,258,0,0" Width="521" Height="25" VerticalAlignment="Top"/>
+        <Label Content="If available, prefer neural voices to standard ones" HorizontalAlignment="Left" Margin="10,391,0,170.5" Width="313"/>
+        <Label Content="Azure Cognitive Services " HorizontalAlignment="Left" Margin="22,0,0,0" VerticalAlignment="Top" Width="142" Background="White"/>
+        <TextBox HorizontalAlignment="Left" Height="23" Margin="11,343,0,0" TextWrapping="Wrap" Text="Suggested format in Bold" VerticalAlignment="Top" Width="172" BorderBrush="{x:Null}"/>
+        <Label Content="Destination" HorizontalAlignment="Left" Margin="22,152,0,0" VerticalAlignment="Top" Width="71" Background="White"/>
+        <Label Content="Audio" HorizontalAlignment="Left" Margin="22,293,0,0" VerticalAlignment="Top" Width="43" Background="White"/>
+        <TextBlock HorizontalAlignment="Left" Margin="10,554,0,-67.5" TextWrapping="Wrap" VerticalAlignment="Top" FontSize="16"><Run Text="Azure Text to Speech Voice Generator GUI"/><LineBreak/><Run Text="Created by Luca Vitali - Microsoft Office Apps &amp; Services MVP"/></TextBlock>
+        <Button x:Name="Link_Blog" Content="https://lucavitali.wordpress.com" HorizontalAlignment="Left" Margin="63,598,0,-5.5" VerticalAlignment="Top" Width="181" Height="20" BorderBrush="{x:Null}" Background="{x:Null}" HorizontalContentAlignment="Left" Padding="0" VerticalContentAlignment="Top" Foreground="#FF0066CC" />
+        <Label Content="[Blog]" HorizontalAlignment="Left" Height="20" Margin="10,598,0,-14.5" VerticalAlignment="Top" Width="48" Padding="0" RenderTransformOrigin="0.507,0.125"/>
+        <Label Content="[Twitter]" HorizontalAlignment="Left" Height="20" Margin="10,618,0,-17" VerticalAlignment="Top" Width="48" Padding="0"/>
+        <Button x:Name="Link_Twitter" Content="https://twitter.com/Luca_Vitali" HorizontalAlignment="Left" Margin="63,618,0,-17" VerticalAlignment="Top" Width="181" Height="20" BorderBrush="{x:Null}" Background="{x:Null}" HorizontalContentAlignment="Left" Padding="0" VerticalContentAlignment="Top" Foreground="#FF0066CC" />
+        <Label Content="[LinkedIn]" HorizontalAlignment="Left" Margin="278,598,0,6" Width="55" Padding="0" RenderTransformOrigin="0.507,0.125"/>
+        <Label Content="[GitHub]" HorizontalAlignment="Left" Height="20" Margin="278,618,0,-7" VerticalAlignment="Top" Width="48" Padding="0"/>
+        <Button x:Name="Link_GitHub" Content="https://github.com/LucaVitali" HorizontalAlignment="Left" Margin="338,618,0,-7" VerticalAlignment="Top" Width="181" Height="20" BorderBrush="{x:Null}" Background="{x:Null}" HorizontalContentAlignment="Left" Padding="0" VerticalContentAlignment="Top" Foreground="#FF0066CC" />
+        <Button x:Name="Link_LinkedIn" Content="https://linkedin.com/in/lucavitali" HorizontalAlignment="Left" Margin="338,598,0,0" VerticalAlignment="Top" Width="181" Height="20" BorderBrush="{x:Null}" Background="{x:Null}" HorizontalContentAlignment="Left" Padding="0" VerticalContentAlignment="Top" Foreground="#FF0066CC" />
+        <Button x:Name="Link_TTS_Services" Content="Learn more about&#xD;&#xA;Azure TTS Services" HorizontalAlignment="Left" Margin="524,101,-75,0" VerticalAlignment="Top" Width="102" Height="35" BorderBrush="{x:Null}" Background="{x:Null}" HorizontalContentAlignment="Left" Padding="0" VerticalContentAlignment="Center" Foreground="#FF0066CC" />
+        <Button x:Name="Link_Create_Account" Content="How to create a &#xD;&#xA;free Azure TTS &#xD;&#xA;Account" HorizontalAlignment="Left" Margin="524,35,-70,0" VerticalAlignment="Top" Width="102" Height="49" BorderBrush="{x:Null}" Background="{x:Null}" HorizontalContentAlignment="Left" Padding="0" VerticalContentAlignment="Center" Foreground="#FF0066CC" />
+        <TextBlock HorizontalAlignment="Left" Margin="531,567,-43.5,0" TextWrapping="Wrap" Text="Version 1.0" VerticalAlignment="Top" Width="95" FontSize="16" TextAlignment="Center"/>
+        <Button x:Name="Link_Check_Update" Content=" Check&#xD;&#xA;Update" HorizontalAlignment="Left" Margin="531,588,-33,-2" VerticalAlignment="Top" Width="95" Height="44" BorderBrush="{x:Null}" Background="{x:Null}" HorizontalContentAlignment="Center" Padding="0" VerticalContentAlignment="Center" Foreground="#FF0066CC" FontSize="16" />
     </Grid>
 </Window>
 '@
@@ -311,29 +331,6 @@ $window.Button_Save.add_Click{
   WriteSettings $Configfile $window.Box_Key.Text $window.ComboBox_Location.Text $window.Box_Output_Path.Text $window.Box_Output_File.Text $window.ComboBox_Format.Text $window.ComboBox_Voice.Text
 }
 
-$window.Button_Reload.add_Click{
-  # remove param() block if access to event information is not required
-  param
-  (
-    [Parameter(Mandatory)][Object]$sender,
-    [Parameter(Mandatory)][Windows.RoutedEventArgs]$e
-  )
-  $Key,$Location,$AudioPath,$AudioFile,$AudioFormat,$Voice = ReadSettings
-  $window.Box_Key.Text= $Key
-  $window.ComboBox_Location.Text= $Location
-  $window.Box_Output_Path.Text= $AudioPath
-  $window.Box_Output_File.Text= $AudioFile
-  $window.ComboBox_Format.Text= $AudioFormat
-  $TokenURI = "https://$($location).api.cognitive.microsoft.com/sts/v1.0/issueToken"
-  $ServiceURI = "https://$($Location).tts.speech.microsoft.com/cognitiveservices/v1"
-  $TokenHeaders = @{"Content-type"= "application/x-www-form-urlencoded";"Content-Length"= "0";"Ocp-Apim-Subscription-Key"= $Key}
-  $OAuthToken = Invoke-RestMethod -Method POST -Uri $TokenURI -Headers $TokenHeaders
-  $VoiceListURI = "https://$($Location).tts.speech.microsoft.com/cognitiveservices/voices/list"
-  $RequestHeadersGET = @{"Authorization"= $OAuthToken}
-  $VoiceList = Invoke-RestMethod -Method GET -Uri $VoiceListURI -Headers $RequestHeadersGET
-  $window.ComboBox_Voice.Text= $Voice
- }
-
 $window.Box_Output_Path.add_SelectionChanged{
   # remove param() block if access to event information is not required
   param
@@ -366,6 +363,120 @@ $window.Button_Browse.add_Click{
   $window.Box_Output_Path.Text = (Get-Folder "Select the output folder or create a new one")
 }
 
+$window.Button_Reload.add_Click{
+  # remove param() block if access to event information is not required
+  param
+  (
+    [Parameter(Mandatory)][Object]$sender,
+    [Parameter(Mandatory)][Windows.RoutedEventArgs]$e
+  )
+  $Key,$Location,$AudioPath,$AudioFile,$AudioFormat,$Voice = ReadSettings
+  $window.Box_Key.Text= $Key
+  $window.ComboBox_Location.Text= $Location
+  $window.Box_Output_Path.Text= $AudioPath
+  $window.Box_Output_File.Text= $AudioFile
+  $window.ComboBox_Format.Text= $AudioFormat
+  $TokenURI = "https://$($location).api.cognitive.microsoft.com/sts/v1.0/issueToken"
+  $ServiceURI = "https://$($Location).tts.speech.microsoft.com/cognitiveservices/v1"
+  $TokenHeaders = @{"Content-type"= "application/x-www-form-urlencoded";"Content-Length"= "0";"Ocp-Apim-Subscription-Key"= $Key}
+  $OAuthToken = Invoke-RestMethod -Method POST -Uri $TokenURI -Headers $TokenHeaders
+  $VoiceListURI = "https://$($Location).tts.speech.microsoft.com/cognitiveservices/voices/list"
+  $RequestHeadersGET = @{"Authorization"= $OAuthToken}
+  $VoiceList = Invoke-RestMethod -Method GET -Uri $VoiceListURI -Headers $RequestHeadersGET
+  $window.ComboBox_Voice.Text= $Voice
+ }
+
+$window.ComboBox_Location.add_LostFocus{
+  # remove param() block if access to event information is not required
+  param
+  (
+    [Parameter(Mandatory)][Object]$sender,
+    [Parameter(Mandatory)][Windows.RoutedEventArgs]$e
+  )
+   $Key= $window.Box_Key.Text
+   $Location= $window.ComboBox_Location.Text
+   $window.Label_Token_URI.Content= "https://$($window.ComboBox_Location.Text).api.cognitive.microsoft.com/sts/v1.0/issueToken"
+   $window.Label_Service_URI.Content= "https://$($window.ComboBox_Location.Text).tts.speech.microsoft.com/cognitiveservices/v1"
+   $TokenURI = "https://$($location).api.cognitive.microsoft.com/sts/v1.0/issueToken"
+   $ServiceURI = "https://$($Location).tts.speech.microsoft.com/cognitiveservices/v1"
+   $TokenHeaders = @{"Content-type"= "application/x-www-form-urlencoded";"Content-Length"= "0";"Ocp-Apim-Subscription-Key"= $Key}
+   $OAuthToken = Invoke-RestMethod -Method POST -Uri $TokenURI -Headers $TokenHeaders
+   $VoiceListURI = "https://$($Location).tts.speech.microsoft.com/cognitiveservices/voices/list"
+   $RequestHeadersGET = @{"Authorization"= $OAuthToken}
+   $VoiceList = Invoke-RestMethod -Method GET -Uri $VoiceListURI -Headers $RequestHeadersGET
+   $window.ComboBox_Voice.Text= $Voice
+}
+
+$window.Link_Blog.add_Click{
+  # remove param() block if access to event information is not required
+  param
+  (
+    [Parameter(Mandatory)][Object]$sender,
+    [Parameter(Mandatory)][Windows.RoutedEventArgs]$e
+  )
+  Start-Process ("https://lucavitali.wordpress.com");
+}
+
+$window.Link_Twitter.add_Click{
+  # remove param() block if access to event information is not required
+  param
+  (
+    [Parameter(Mandatory)][Object]$sender,
+    [Parameter(Mandatory)][Windows.RoutedEventArgs]$e
+  )
+  Start-Process ("https://twitter.com/Luca_Vitali");
+}
+
+$window.Link_LinkedIn.add_Click{
+  # remove param() block if access to event information is not required
+  param
+  (
+    [Parameter(Mandatory)][Object]$sender,
+    [Parameter(Mandatory)][Windows.RoutedEventArgs]$e
+  )
+  Start-Process ("https://linkedin.com/in/lucavitali");
+}
+
+$window.Link_GitHub.add_Click{
+  # remove param() block if access to event information is not required
+  param
+  (
+    [Parameter(Mandatory)][Object]$sender,
+    [Parameter(Mandatory)][Windows.RoutedEventArgs]$e
+  )
+  Start-Process ("https://github.com/LucaVitali");
+}
+
+$window.Link_TTS_Services.add_Click{
+  # remove param() block if access to event information is not required
+  param
+  (
+    [Parameter(Mandatory)][Object]$sender,
+    [Parameter(Mandatory)][Windows.RoutedEventArgs]$e
+  )
+  Start-Process ("https://docs.microsoft.com/en-us/azure/cognitive-services/speech-service/rest-text-to-speech");
+}
+
+$window.Link_Create_Account.add_Click{
+  # remove param() block if access to event information is not required
+  param
+  (
+    [Parameter(Mandatory)][Object]$sender,
+    [Parameter(Mandatory)][Windows.RoutedEventArgs]$e
+  )
+  Start-Process ("http://bit.ly/AzureTTS");
+}
+
+$window.Link_Check_Update.add_Click{
+  # remove param() block if access to event information is not required
+  param
+  (
+    [Parameter(Mandatory)][Object]$sender,
+    [Parameter(Mandatory)][Windows.RoutedEventArgs]$e
+  )
+  Start-Process ("https://github.com/LucaVitali/AzureTTSVoiceGeneratorGUI");
+}
+
 # Show Window
 $Key,$Location,$AudioPath,$AudioFile,$AudioFormat,$Voice = ReadSettings
 $TokenURI = "https://$($location).api.cognitive.microsoft.com/sts/v1.0/issueToken"
@@ -383,6 +494,8 @@ $window.ComboBox_Format.Text= $AudioFormat
 $window.ComboBox_Voice.ItemsSource= $VoiceList.Name
 $window.ComboBox_Voice.Text= $Voice
 $window.Label_Output.Content= "$($window.Box_Output_Path.Text)\$($window.Box_Output_File.Text)"
+$window.Label_Token_URI.Content= "https://$($window.ComboBox_Location.Text).api.cognitive.microsoft.com/sts/v1.0/issueToken"
+$window.Label_Service_URI.Content= "https://$($window.ComboBox_Location.Text).tts.speech.microsoft.com/cognitiveservices/v1"
 $result = Show-WPFWindow -Window $window
 #region Process results
 if ($result -eq $true)
