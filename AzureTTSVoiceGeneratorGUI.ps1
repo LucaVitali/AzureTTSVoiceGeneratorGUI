@@ -144,27 +144,25 @@ function Get-Folder {
 }
 
 #region XAML window definition
-# Right-click XAML and choose WPF/Edit... to edit WPF Design
-# in your favorite WPF editing tool
 $xaml = @'
 <Window
    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-   Width ="660"
+   Width ="670"
    SizeToContent="WidthAndHeight"
-   Title="AzureTTSVoiceGeneratorGUI" Height="681" ResizeMode="CanMinimize" ShowInTaskbar="False" WindowStartupLocation="CenterScreen" MinWidth="660" MinHeight="681">
-    <Grid Margin="10,10,4,0" Height="634" VerticalAlignment="Top">
+   Title="AzureTTSVoiceGeneratorGUI" Height="655" ResizeMode="CanMinimize" ShowInTaskbar="False" WindowStartupLocation="CenterScreen" MinWidth="670" MinHeight="655">
+    <Grid Margin="10,10,4,0" Height="612" VerticalAlignment="Top">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-        <Rectangle HorizontalAlignment="Left" Height="109" Margin="10,307,-113,0" Stroke="Gray" VerticalAlignment="Top" Width="625"/>
+        <Rectangle HorizontalAlignment="Left" Height="83" Margin="10,307,0,0" Stroke="Gray" VerticalAlignment="Top" Width="625"/>
         <Rectangle HorizontalAlignment="Left" Height="118" Margin="10,165,-118,0" Stroke="Gray" VerticalAlignment="Top" Width="625"/>
         <Rectangle HorizontalAlignment="Left" Height="127" Margin="10,14,-123,0" Stroke="Gray" VerticalAlignment="Top" Width="625"/>
-        <TextBox x:Name="Box_TextMessage" HorizontalAlignment="Left" Height="111" Margin="10,438,0,-40.5" TextWrapping="Wrap" Text="Place here the text you want to convert to a voice message" VerticalAlignment="Top" Width="509"/>
-        <Button x:Name="Button_Run" Content="RUN!" HorizontalAlignment="Left" Margin="531,438,-102,0" VerticalAlignment="Top" Width="95" Height="44"/>
+        <TextBox x:Name="Box_TextMessage" HorizontalAlignment="Left" Height="111" Margin="10,401,0,0" TextWrapping="Wrap" Text="Place here the text you want to convert to a voice message" VerticalAlignment="Top" Width="509"/>
+        <Button x:Name="Button_Run" Content="RUN!" HorizontalAlignment="Left" Margin="531,401,0,0" VerticalAlignment="Top" Width="95" Height="44"/>
         <ComboBox x:Name="ComboBox_Location" HorizontalAlignment="Left" Margin="98,35,-2,0" VerticalAlignment="Top" Width="411" IsEditable="True" IsSynchronizedWithCurrentItem="True">
             <ComboBoxItem Content="australiaeast"/>
             <ComboBoxItem Content="canadacentral"/>
@@ -193,7 +191,7 @@ $xaml = @'
         <TextBox x:Name="Box_Output_Path" HorizontalAlignment="Left" Height="22" Margin="98,178,-6,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="421"/>
         <TextBox x:Name="Box_Output_File" HorizontalAlignment="Left" Height="22" Margin="98,210,-6,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="421"/>
         <Label Content="Audio Format" HorizontalAlignment="Left" Margin="11,317,0,0" VerticalAlignment="Top" Width="83"/>
-        <Label Content="Voice" HorizontalAlignment="Left" Margin="10,367,0,0" VerticalAlignment="Top" Width="83"/>
+        <Label Content="Voice" HorizontalAlignment="Left" Margin="10,354,0,0" VerticalAlignment="Top" Width="83"/>
         <ComboBox x:Name="ComboBox_Format" HorizontalAlignment="Left" Margin="98,321,0,0" VerticalAlignment="Top" Width="421" IsSynchronizedWithCurrentItem="True">
             <ComboBoxItem Content="raw-16khz-16bit-mono-pcm"/>
             <ComboBoxItem Content="raw-8khz-8bit-mono-mulaw"/>
@@ -209,9 +207,9 @@ $xaml = @'
             <ComboBoxItem Content="audio-24khz-96kbitrate-mono-mp3"/>
             <ComboBoxItem Content="audio-24khz-48kbitrate-mono-mp3"/>
         </ComboBox>
-        <ComboBox x:Name="ComboBox_Voice" HorizontalAlignment="Left" Margin="98,371,0,0" VerticalAlignment="Top" Width="421" IsSynchronizedWithCurrentItem="True"/>
-        <Button x:Name="Button_Save" Content="Save Settings" HorizontalAlignment="Left" Margin="531,495,-102,-8.5" VerticalAlignment="Top" Width="95" Height="22"/>
-        <Button x:Name="Button_Reload" Content="Reload Settings" HorizontalAlignment="Left" Margin="531,527,-102,-40.5" VerticalAlignment="Top" Width="95" Height="22"/>
+        <ComboBox x:Name="ComboBox_Voice" HorizontalAlignment="Left" Margin="98,358,0,0" VerticalAlignment="Top" Width="421" IsSynchronizedWithCurrentItem="True"/>
+        <Button x:Name="Button_Save" Content="Save Settings" HorizontalAlignment="Left" Margin="531,458,0,0" VerticalAlignment="Top" Width="95" Height="22"/>
+        <Button x:Name="Button_Reload" Content="Reload Settings" HorizontalAlignment="Left" Margin="531,490,0,0" VerticalAlignment="Top" Width="95" Height="22"/>
         <Label Content="Output" HorizontalAlignment="Left" Margin="10,238,0,0" VerticalAlignment="Top" Width="84"/>
         <Label x:Name="Label_Output" Content="" HorizontalAlignment="Left" Margin="98,238,-113,0" VerticalAlignment="Top" Width="528"/>
         <Button x:Name="Button_Browse" Content="Browse" HorizontalAlignment="Left" Margin="531,178,-113,0" VerticalAlignment="Top" Width="95" Height="22"/>
@@ -220,24 +218,24 @@ $xaml = @'
         <Label x:Name="Label_Token_URI" Content="" HorizontalAlignment="Left" Margin="98,89,0,0" VerticalAlignment="Top" Width="411"/>
         <Label x:Name="Label_Service_URI" Content="" HorizontalAlignment="Left" Margin="98,115,0,0" VerticalAlignment="Top" Width="411"/>
         <Label Content="Be careful: existing file with the same Output name will be overwritten without any alert!" HorizontalAlignment="Left" Margin="10,258,0,0" Width="521" Height="25" VerticalAlignment="Top"/>
-        <Label Content="If available, prefer neural voices to standard ones" HorizontalAlignment="Left" Margin="10,391,0,170.5" Width="313"/>
         <Label Content="Azure Cognitive Services " HorizontalAlignment="Left" Margin="22,0,0,0" VerticalAlignment="Top" Width="142" Background="White"/>
-        <TextBox HorizontalAlignment="Left" Height="23" Margin="11,343,0,0" TextWrapping="Wrap" Text="Suggested format in Bold" VerticalAlignment="Top" Width="172" BorderBrush="{x:Null}"/>
+        <TextBox HorizontalAlignment="Left" Height="33" Margin="524,317,0,0" TextWrapping="Wrap" Text="Suggested format in Bold" VerticalAlignment="Top" Width="104" BorderBrush="{x:Null}"/>
         <Label Content="Destination" HorizontalAlignment="Left" Margin="22,152,0,0" VerticalAlignment="Top" Width="71" Background="White"/>
         <Label Content="Audio" HorizontalAlignment="Left" Margin="22,293,0,0" VerticalAlignment="Top" Width="43" Background="White"/>
-        <TextBlock HorizontalAlignment="Left" Margin="10,554,0,-67.5" TextWrapping="Wrap" VerticalAlignment="Top" FontSize="16"><Run Text="Azure Text to Speech Voice Generator GUI"/><LineBreak/><Run Text="Created by Luca Vitali - Microsoft Office Apps &amp; Services MVP"/></TextBlock>
-        <Button x:Name="Link_Blog" Content="https://lucavitali.wordpress.com" HorizontalAlignment="Left" Margin="63,598,0,-5.5" VerticalAlignment="Top" Width="181" Height="20" BorderBrush="{x:Null}" Background="{x:Null}" HorizontalContentAlignment="Left" Padding="0" VerticalContentAlignment="Top" Foreground="#FF0066CC" />
-        <Label Content="[Blog]" HorizontalAlignment="Left" Height="20" Margin="10,598,0,-14.5" VerticalAlignment="Top" Width="48" Padding="0" RenderTransformOrigin="0.507,0.125"/>
-        <Label Content="[Twitter]" HorizontalAlignment="Left" Height="20" Margin="10,618,0,-17" VerticalAlignment="Top" Width="48" Padding="0"/>
-        <Button x:Name="Link_Twitter" Content="https://twitter.com/Luca_Vitali" HorizontalAlignment="Left" Margin="63,618,0,-17" VerticalAlignment="Top" Width="181" Height="20" BorderBrush="{x:Null}" Background="{x:Null}" HorizontalContentAlignment="Left" Padding="0" VerticalContentAlignment="Top" Foreground="#FF0066CC" />
-        <Label Content="[LinkedIn]" HorizontalAlignment="Left" Margin="278,598,0,6" Width="55" Padding="0" RenderTransformOrigin="0.507,0.125"/>
-        <Label Content="[GitHub]" HorizontalAlignment="Left" Height="20" Margin="278,618,0,-7" VerticalAlignment="Top" Width="48" Padding="0"/>
-        <Button x:Name="Link_GitHub" Content="https://github.com/LucaVitali" HorizontalAlignment="Left" Margin="338,618,0,-7" VerticalAlignment="Top" Width="181" Height="20" BorderBrush="{x:Null}" Background="{x:Null}" HorizontalContentAlignment="Left" Padding="0" VerticalContentAlignment="Top" Foreground="#FF0066CC" />
-        <Button x:Name="Link_LinkedIn" Content="https://linkedin.com/in/lucavitali" HorizontalAlignment="Left" Margin="338,598,0,0" VerticalAlignment="Top" Width="181" Height="20" BorderBrush="{x:Null}" Background="{x:Null}" HorizontalContentAlignment="Left" Padding="0" VerticalContentAlignment="Top" Foreground="#FF0066CC" />
+        <TextBlock HorizontalAlignment="Left" Margin="10,517,0,0" TextWrapping="Wrap" VerticalAlignment="Top" FontSize="16"><Run Text="Azure Text to Speech Voice Generator GUI"/><LineBreak/><Run Text="Created by Luca Vitali - Microsoft Office Apps &amp; Services MVP"/></TextBlock>
+        <Button x:Name="Link_Blog" Content="https://lucavitali.wordpress.com" HorizontalAlignment="Left" Margin="63,561,0,0" VerticalAlignment="Top" Width="181" Height="20" BorderBrush="{x:Null}" Background="{x:Null}" HorizontalContentAlignment="Left" Padding="0" VerticalContentAlignment="Top" Foreground="#FF0066CC" />
+        <Label Content="[Blog]" HorizontalAlignment="Left" Height="20" Margin="10,561,0,0" VerticalAlignment="Top" Width="48" Padding="0" RenderTransformOrigin="0.507,0.125"/>
+        <Label Content="[Twitter]" HorizontalAlignment="Left" Height="20" Margin="10,581,0,0" VerticalAlignment="Top" Width="48" Padding="0"/>
+        <Button x:Name="Link_Twitter" Content="https://twitter.com/Luca_Vitali" HorizontalAlignment="Left" Margin="63,581,0,0" VerticalAlignment="Top" Width="181" Height="20" BorderBrush="{x:Null}" Background="{x:Null}" HorizontalContentAlignment="Left" Padding="0" VerticalContentAlignment="Top" Foreground="#FF0066CC" />
+        <Label Content="[LinkedIn]" HorizontalAlignment="Left" Margin="278,561,0,43" Width="55" Padding="0" RenderTransformOrigin="0.507,0.125"/>
+        <Label Content="[GitHub]" HorizontalAlignment="Left" Height="20" Margin="278,581,0,0" VerticalAlignment="Top" Width="48" Padding="0"/>
+        <Button x:Name="Link_GitHub" Content="https://github.com/LucaVitali" HorizontalAlignment="Left" Margin="338,581,0,0" VerticalAlignment="Top" Width="181" Height="20" BorderBrush="{x:Null}" Background="{x:Null}" HorizontalContentAlignment="Left" Padding="0" VerticalContentAlignment="Top" Foreground="#FF0066CC" />
+        <Button x:Name="Link_LinkedIn" Content="https://linkedin.com/in/lucavitali" HorizontalAlignment="Left" Margin="338,561,0,0" VerticalAlignment="Top" Width="181" Height="20" BorderBrush="{x:Null}" Background="{x:Null}" HorizontalContentAlignment="Left" Padding="0" VerticalContentAlignment="Top" Foreground="#FF0066CC" />
         <Button x:Name="Link_TTS_Services" Content="Learn more about&#xD;&#xA;Azure TTS Services" HorizontalAlignment="Left" Margin="524,101,-75,0" VerticalAlignment="Top" Width="102" Height="35" BorderBrush="{x:Null}" Background="{x:Null}" HorizontalContentAlignment="Left" Padding="0" VerticalContentAlignment="Center" Foreground="#FF0066CC" />
         <Button x:Name="Link_Create_Account" Content="How to create a &#xD;&#xA;free Azure TTS &#xD;&#xA;Account" HorizontalAlignment="Left" Margin="524,35,-70,0" VerticalAlignment="Top" Width="102" Height="49" BorderBrush="{x:Null}" Background="{x:Null}" HorizontalContentAlignment="Left" Padding="0" VerticalContentAlignment="Center" Foreground="#FF0066CC" />
-        <TextBlock HorizontalAlignment="Left" Margin="531,567,-43.5,0" TextWrapping="Wrap" Text="Version 1.0" VerticalAlignment="Top" Width="95" FontSize="16" TextAlignment="Center"/>
-        <Button x:Name="Link_Check_Update" Content=" Check&#xD;&#xA;Update" HorizontalAlignment="Left" Margin="531,588,-33,-2" VerticalAlignment="Top" Width="95" Height="44" BorderBrush="{x:Null}" Background="{x:Null}" HorizontalContentAlignment="Center" Padding="0" VerticalContentAlignment="Center" Foreground="#FF0066CC" FontSize="16" />
+        <TextBlock HorizontalAlignment="Left" Margin="531,530,0,0" TextWrapping="Wrap" Text="Version 1.0" VerticalAlignment="Top" Width="95" FontSize="16" TextAlignment="Center"/>
+        <Button x:Name="Link_Check_Update" Content=" Check&#xD;&#xA;Update" HorizontalAlignment="Left" Margin="531,551,0,0" VerticalAlignment="Top" Width="95" Height="44" BorderBrush="{x:Null}" Background="{x:Null}" HorizontalContentAlignment="Center" Padding="0" VerticalContentAlignment="Center" Foreground="#FF0066CC" FontSize="16" />
+        <TextBox HorizontalAlignment="Left" Height="33" Margin="524,354,0,0" TextWrapping="Wrap" Text="Prefer neural voices&#xD;&#xA;to standard ones" VerticalAlignment="Top" Width="111" BorderBrush="{x:Null}"/>
     </Grid>
 </Window>
 '@
