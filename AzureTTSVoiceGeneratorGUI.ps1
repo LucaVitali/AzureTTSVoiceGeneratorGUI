@@ -7,7 +7,7 @@ AzureTTSVoiceGeneratorGUI.ps1
 
 .DESCRIPTION 
 PowerShell script to generate Voice Messages with Azure Cognitive Services Text to Speech
-Quick Link: http://bit.ly/AzureTTS
+Quick Link: http://bit.ly/AzureTTSGUI
 
 .NOTES
 Written by: Luca Vitali - Microsoft Office Apps & Services MVP
@@ -462,7 +462,7 @@ $window.Link_Create_Account.add_Click{
     [Parameter(Mandatory)][Object]$sender,
     [Parameter(Mandatory)][Windows.RoutedEventArgs]$e
   )
-  Start-Process ("http://bit.ly/AzureTTS");
+  Start-Process ("http://bit.ly/AzureTTSGUI");
 }
 
 $window.Link_Check_Update.add_Click{
