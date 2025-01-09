@@ -10,7 +10,7 @@ PowerShell script to generate Voice Messages with Azure Cognitive Services Text 
 Quick Link: http://bit.ly/AzureTTSGUI
 
 .NOTES
-Written by: Luca Vitali - Microsoft Office Apps & Services MVP
+Written by: Luca Vitali - Microsoft M365 Apps & Services MVP
 
 Find me on:
 [Blog]		https://lucavitali.wordpress.com/
@@ -43,6 +43,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 Change Log:
+V1.1, 08/01/2025 - Fixed special character recognition (thanks to Andrea Pezzali)
 V1.00, 02/09/2019 - Initial version
 #>
 
@@ -57,40 +58,35 @@ $AudioFormat = ""
 $Voice = ""
 #endregion InitializeVariables
 
-Function ReadSettings ()
-{
-	if (Test-Path -Path "$($ConfigFile)")
-	{
-		try
-		{
-			$xml = [xml](get-Content -path "$($ConfigFile)")
-			$Key = $xml.configuration.SavedKey
-			$Location = $xml.configuration.SavedLocation
-			$AudioPath = $xml.configuration.SavedAudioPath
-      $AudioFile = $xml.configuration.SavedAudioFile
-      $AudioFormat = $xml.configuration.SavedAudioFormat
-      $Voice = $xml.configuration.SavedVoice
-		}
-		catch
-		{
+Function ReadSettings {
+  if (Test-Path -Path "$($ConfigFile)") {
+      try {
+          $xml = [xml](Get-Content -path "$($ConfigFile)")
+          $Key = $xml.configuration.SavedKey
+          $Location = $xml.configuration.SavedLocation
+          $AudioPath = $xml.configuration.SavedAudioPath
+          $AudioFile = $xml.configuration.SavedAudioFile
+          $AudioFormat = $xml.configuration.SavedAudioFormat
+          $Voice = $xml.configuration.SavedVoice
+      } catch {
+          Write-Error "Error reading configuration file: $_"
+          $Key = ""
+          $Location = ""
+          $AudioPath = ""
+          $AudioFile = ""
+          $AudioFormat = ""
+          $Voice = ""
+      }
+  } else {
+      Write-Warning "Configuration file not found."
       $Key = ""
       $Location = ""
-			$AudioPath = ""
+      $AudioPath = ""
       $AudioFile = ""
       $AudioFormat = ""
       $Voice = ""
-		}
-	}
-	else
-	{
-      $Key = ""
-      $Location = ""
-			$AudioPath = ""
-      $AudioFile = ""
-      $AudioFormat = ""
-      $Voice = ""
-	}
-	return $Key,$Location,$AudioPath,$AudioFile,$AudioFormat,$Voice
+  }
+  return $Key, $Location, $AudioPath, $AudioFile, $AudioFormat, $Voice
 }
 
 Function WriteSettings ()
@@ -233,7 +229,7 @@ $xaml = @'
         <Button x:Name="Link_LinkedIn" Content="https://linkedin.com/in/lucavitali" HorizontalAlignment="Left" Margin="338,561,0,0" VerticalAlignment="Top" Width="181" Height="20" BorderBrush="{x:Null}" Background="{x:Null}" HorizontalContentAlignment="Left" Padding="0" VerticalContentAlignment="Top" Foreground="#FF0066CC" />
         <Button x:Name="Link_TTS_Services" Content="Learn more about&#xD;&#xA;Azure TTS Services" HorizontalAlignment="Left" Margin="524,101,-75,0" VerticalAlignment="Top" Width="102" Height="35" BorderBrush="{x:Null}" Background="{x:Null}" HorizontalContentAlignment="Left" Padding="0" VerticalContentAlignment="Center" Foreground="#FF0066CC" />
         <Button x:Name="Link_Create_Account" Content="How to create a &#xD;&#xA;free Azure TTS &#xD;&#xA;Account" HorizontalAlignment="Left" Margin="524,35,-70,0" VerticalAlignment="Top" Width="102" Height="49" BorderBrush="{x:Null}" Background="{x:Null}" HorizontalContentAlignment="Left" Padding="0" VerticalContentAlignment="Center" Foreground="#FF0066CC" />
-        <TextBlock HorizontalAlignment="Left" Margin="531,530,0,0" TextWrapping="Wrap" Text="Version 1.0" VerticalAlignment="Top" Width="95" FontSize="16" TextAlignment="Center"/>
+        <TextBlock HorizontalAlignment="Left" Margin="531,530,0,0" TextWrapping="Wrap" Text="Version 1.1" VerticalAlignment="Top" Width="95" FontSize="16" TextAlignment="Center"/>
         <Button x:Name="Link_Check_Update" Content=" Check&#xD;&#xA;Update" HorizontalAlignment="Left" Margin="531,551,0,0" VerticalAlignment="Top" Width="95" Height="44" BorderBrush="{x:Null}" Background="{x:Null}" HorizontalContentAlignment="Center" Padding="0" VerticalContentAlignment="Center" Foreground="#FF0066CC" FontSize="16" />
         <TextBox HorizontalAlignment="Left" Height="33" Margin="524,354,0,0" TextWrapping="Wrap" Text="Prefer neural voices&#xD;&#xA;to standard ones" VerticalAlignment="Top" Width="111" BorderBrush="{x:Null}"/>
     </Grid>
@@ -308,6 +304,7 @@ $AudioFile = $window.Box_Output_File.Text
 $AudioFormat = $window.ComboBox_Format.Text
 $RequestHeaders = @{"Authorization"= $OAuthToken;"Content-Type"= "application/ssml+xml";"X-Microsoft-OutputFormat"= $AudioFormat;"User-Agent" = "MIMText2Speech"}
 [xml]$VoiceBody = @"
+<?xml version="1.0" encoding="UTF-8"?>
 <speak version='1.0' xmlns="http://www.w3.org/2001/10/synthesis" xml:lang='en-US'> 
   <voice  name='$($window.ComboBox_Voice.Text)'>
     VoiceMessage
